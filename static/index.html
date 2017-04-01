@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="ChatSocket">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <script type="application/javascript" src="/js/vendor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+    <script type="application/javascript" src="js/main.js"></script>
+</head>
+<body ng-controller="ChatCtrl">
+
+<div ng-show="nickWrap" class="nickclass">
+    <h1>What's your nickname?</h1>
+    <p ng-show="nickError" class="alert alert-danger" role="alert">{{nickErr}}</p>
+    <form>
+        <div class="input-group">
+            <input type="text" ng-model="nickname" class="form-control" placeholder="enter your nickname" autofocus/>
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-default" ng-click="setNickname()">Go!</button>
+            </span>
+        </div>
+    </form>
+</div>
+
+<div class="wrapper" ng-show="chatWrap">
+    <div class="container">
+        <div class="left">
+            <div class="top">
+                <input type="text" ng-model="searchText" placeholder="Search"/>
+                <!--<button class="search" ng-click="editNick()">Edit nickname</button>-->
+            </div>
+
+            <ul class="people">
+                <li class="person" ng-repeat="user in usersObj | filter:searchText track by $index" ng-class="{active: $index == selectedItem}" ng-click="showPrivate($index)">
+                    <span class="name">{{user}}</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="right">
+            <div class="top">
+                <span>To: <span class="name">{{currentUser}}</span></span>
+
+            </div>
+            <ul class="chat">
+                <li ng-repeat="message in chatOnce[currentUser] track by $index">
+                    <div ng-if="message.type == 'info'" class="info">
+                        {{ message.msg }}
+                    </div>
+                    <div ng-if="message.type == 'chat'" >
+                        <div ng-if="message.from == currentUser" class="bubble you">
+                            <div class="header">
+                                <strong class="primary-font">{{ message.nick }}</strong>
+                                <small class="pull-right text-muted">{{message.created | myDateFormat | date:'medium'}}</small>
+                            </div>
+                            <p>
+                                {{ message.msg }}
+                            </p>
+                        </div>
+                        <div ng-if="message.to == currentUser" class="bubble me">
+                            <div class="header">
+                                <strong class="primary-font">{{ message.nick }}</strong>
+                                <small class="pull-right text-muted">{{message.created | myDateFormat | date:'medium'}}</small>
+                            </div>
+                            <p>
+                                {{ message.msg }}
+                            </p>
+                        </div>
+                        <div ng-if="message.nick">
+                            <div class="header">
+                                <strong class="primary-font">{{ message.nick }}</strong>
+                                <small class="pull-right text-muted">{{message.created | myDateFormat | date:'medium'}}</small>
+                            </div>
+                            <p>
+                                {{ message.msg }}
+                            </p>
+                        </div>
+
+                    </div>
+                </li>
+            </ul>
+
+            <div class="write">
+                <input ng-model="msg" autofocus type="text" placeholder="Type chat here" ng-keypress="($event.keyCode == 13) ? send() : alert('You dont write message!')"/>
+                <a href="#" class="write-link send" ng-click="send()"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</body>
+</html>
